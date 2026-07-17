@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Tareas Pipe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FDEFC9; --panel: #FFFCF2; --panel-2: #FFF6DE; --border: #F0DEA6;
+    --text: #3A2E18; --dim: #8A7A56; --dim-2: #B8A575;
+    --accent: #F2872E; --accent-dim: rgba(242,135,46,0.14);
+    --c1: #E14A45; --c2: #3B5FE0; --c3: #C9860F; --c4: #8B8171; --none: #BBA980;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background: var(--bg); }
+  body { font-family: 'Inter', sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 28px 20px 60px; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 6px; display:flex; align-items:center; gap:8px; }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #2ECC71; box-shadow: 0 0 0 3px rgba(46,204,113,0.25); }
+  .live-dot.stale { background: var(--c1); box-shadow: 0 0 0 3px rgba(225,74,69,0.2); }
+  .refresh-btn {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: normal;
+    text-transform: none; color: var(--accent); background: var(--accent-dim);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px;
+    cursor: pointer; transition: all .15s ease;
+  }
+  .refresh-btn:hover { background: var(--accent); color: #FFFCF2; }
+  .refresh-btn:disabled { opacity: 0.5; cursor: default; background: var(--accent-dim); color: var(--accent); }
+  .refresh-btn .spin { display: inline-block; transition: transform .5s ease; }
+  .refresh-btn.loading .spin { animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .subline { color: var(--dim); font-size: 13px; margin: 0 0 22px; line-height: 1.5; }
+  .horizon-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
+  .htab { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px 8px; text-align: center; cursor: pointer; box-shadow: 0 1px 2px rgba(58,46,24,0.06); transition: all .15s ease; }
+  .htab:hover { border-color: var(--dim-2); }
+  .htab.active { background: var(--text); border-color: var(--text); }
+  .htab .hn { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); }
+  .htab.active .hn { color: var(--bg); }
+  .htab.warn .hn { color: var(--c1); }
+  .htab.warn.active .hn { color: #FFC4C0; }
+  .htab .hl { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  .sinfecha-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; padding: 5px 12px; font-size: 11.5px; color: var(--dim); cursor: pointer; margin-bottom: 20px; transition: all .15s ease; }
+  .sinfecha-pill:hover { border-color: var(--dim-2); color: var(--text); }
+  .sinfecha-pill.active { background: var(--text); border-color: var(--text); color: var(--bg); }
+  .sinfecha-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--none); }
+  .group-toggle { display: inline-flex; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; padding: 3px; margin-bottom: 20px; margin-left: 8px; }
+  .gtab { font-size: 12.5px; padding: 7px 16px; border-radius: 999px; border: none; background: transparent; color: var(--dim); cursor: pointer; font-family: inherit; font-weight: 600; transition: all .15s ease; }
+  .gtab.active { background: var(--accent); color: #FFFCF2; }
+  .group { margin-bottom: 18px; }
+  .group-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .group-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .group-name { font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 700; }
+  .group-sub { font-size: 11px; color: var(--dim); }
+  .group-count { font-size: 11px; color: var(--dim); background: var(--panel-2); border-radius: 999px; padding: 1px 8px; margin-left: auto; }
+  .task-row { display: block; padding: 7px 0 7px 17px; border-left: 2px solid var(--border); font-size: 13.5px; line-height: 1.4; color: var(--text); text-decoration: none; transition: color .15s ease, border-color .15s ease; }
+  .task-row:hover { color: var(--accent); border-left-color: var(--accent); }
+  .task-row.late::before { content: "● "; color: var(--c1); font-size: 9px; }
+  .empty, .state-msg { text-align: center; color: var(--dim); font-size: 13px; padding: 40px 0; }
+  .state-msg.error { color: var(--c1); white-space: pre-wrap; text-align: left; padding: 20px; background: var(--panel); border-radius: 12px; border: 1px solid var(--border); }
+  .footnote { margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim-2); line-height: 1.6; }
+  @media (max-width: 480px) { .horizon-tabs { grid-template-columns: repeat(3, 1fr); gap: 6px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow"><span class="live-dot" id="live-dot"></span><span id="eyebrow-text">Cargando…</span><button class="refresh-btn" id="refresh-btn"><span class="spin">⟳</span> Actualizar</button></p>
+  <h1>Dashboard Tareas Pipe</h1>
+  <p class="subline">En vivo desde Notion vía Make. Sin tareas en "Done" ni "No lo Haré". Cada cajón es exclusivo: nada se repite entre cajones.</p>
+
+  <div id="app" class="state-msg">Consultando tus tareas…</div>
+</div>
+
+<script>
+  const WEBHOOK_URL = "https://hook.us2.make.com/u0vcbn18w3p1teslgoze8xfjs4qgq7aa";
+
+  const QCOLORS = { C1:'#E14A45', C2:'#3B5FE0', C3:'#C9860F', C4:'#8B8171', none:'#BBA980' };
+  const QLABELS = {
+    C1:{n:'C1 · Urgente e importante', s:'Hazlo ahora'},
+    C2:{n:'C2 · Importante, no urgente', s:'Agéndalo'},
+    C3:{n:'C3 · Urgente, no importante', s:'Delega o simplifica'},
+    C4:{n:'C4 · Ni urgente ni importante', s:'Elimina o archiva'},
+    none:{n:'Sin prioridad asignada', s:''}
+  };
+  const QORDER = ['C1','C2','C3','C4','none'];
+
+  // --- Parsing del bundle crudo que manda el Array Aggregator de Make (properties_value de Notion) ---
+  function plainText(arr) {
+    if (!Array.isArray(arr)) return '';
+    return arr.map(x => (x && (x.plain_text ?? x.text?.content)) || '').join('');
+  }
+
+  function extractTask(raw) {
+    const pv = raw.properties_value || {};
+    const title = plainText(pv['Tarea pipe']) || '(sin título)';
+    const estado = pv['Hecho'] && pv['Hecho'].name ? pv['Hecho'].name : null;
+    const fecha = pv['FECHA ACCION'] && pv['FECHA ACCION'].start ? pv['FECHA ACCION'].start : null;
+    const priority = pv['Priority'] && pv['Priority'].name ? pv['Priority'].name : null;
+
+    let proyecto = null;
+    const proj = pv['Proyecto (texto)'];
+    if (proj) {
+      if (Array.isArray(proj.array)) {
+        const names = proj.array.map(item => {
+          if (item.title) return plainText(item.title);
+          if (item.rich_text) return plainText(item.rich_text);
+          return null;
+        }).filter(Boolean);
+        proyecto = names.length ? names.join(', ') : null;
+      } else if (typeof proj === 'string') {
+        proyecto = proj;
+      } else if (proj.name) {
+        proyecto = proj.name;
+      }
+    }
+
+    return {
+      t: title,
+      s: estado,
+      d: fecha,
+      q: priority,
+      p: proyecto || 'Sin proyecto',
+      u: raw.url
+    };
+  }
+
+  function qcode(rawQ) {
+    if (!rawQ) return null;
+    const m = String(rawQ).match(/C[1-4]/);
+    return m ? m[0] : null;
+  }
+
+  function toDateOnly(d) {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  function bucketOf(task, TODAY, WEEK_END, MONTH_END, QUARTER_END) {
+    const estado = task.s;
+    const fecha = task.d ? toDateOnly(new Date(task.d)) : null;
+    if (estado === 'ATRASADO') {
+      if (fecha && fecha < TODAY) return 'atrasadas';
+      if (!fecha) return 'sinfecha';
+    } else if (!fecha) {
+      return null;
+    }
+    const d = fecha;
+    if (d <= TODAY) return 'hoy';
+    if (d <= WEEK_END) return 'semana';
+    if (d <= MONTH_END) return 'mes';
+    if (d <= QUARTER_END) return 'trimestre';
+    return null;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function computeWindows() {
+    const now = new Date();
+    const TODAY = toDateOnly(now);
+    const day = TODAY.getDay();
+    const isoOffset = (day === 0) ? 6 : day - 1;
+    const WEEK_START = new Date(TODAY); WEEK_START.setDate(TODAY.getDate() - isoOffset);
+    const WEEK_END = new Date(WEEK_START); WEEK_END.setDate(WEEK_START.getDate() + 6);
+    const MONTH_END = new Date(TODAY.getFullYear(), TODAY.getMonth() + 1, 0);
+    const qStartMonth = Math.floor(TODAY.getMonth() / 3) * 3;
+    const QUARTER_END = new Date(TODAY.getFullYear(), qStartMonth + 3, 0);
+    return { TODAY, WEEK_END, MONTH_END, QUARTER_END };
+  }
+
+  let TASKS = [];
+  let activeHorizon = 'atrasadas';
+  let activeGroup = 'quadrant';
+
+  async function load() {
+    const dot = document.getElementById('live-dot');
+    const eyebrow = document.getElementById('eyebrow-text');
+    const btn = document.getElementById('refresh-btn');
+    btn.disabled = true;
+    btn.classList.add('loading');
+    try {
+      const res = await fetch(WEBHOOK_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const raw = await res.json();
+      if (!Array.isArray(raw)) throw new Error('La respuesta no es un array. Revisa el Body del módulo Webhook response.');
+
+      const { TODAY, WEEK_END, MONTH_END, QUARTER_END } = computeWindows();
+      TASKS = raw
+        .map(extractTask)
+        .map(t => ({ ...t, q: qcode(t.q) }))
+        .map(t => ({ ...t, b: bucketOf(t, TODAY, WEEK_END, MONTH_END, QUARTER_END) }))
+        .filter(t => t.b);
+
+      const now = new Date();
+      eyebrow.textContent = 'TAREAS PIPE · actualizado ' + now.toLocaleDateString('es-CO', {weekday:'long', day:'numeric', month:'long'}) + ' ' + now.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+      dot.classList.remove('stale');
+      buildUI();
+    } catch (err) {
+      dot.classList.add('stale');
+      eyebrow.textContent = 'No se pudo conectar con Make';
+      const app = document.getElementById('app');
+      app.className = 'state-msg error';
+      app.textContent = 'No pude traer los datos en vivo:\n\n' + err.message + '\n\nVerifica que el escenario de Make esté ACTIVO (interruptor ON) y que lo hayas abierto al menos una vez para que "Detect new values" del webhook tenga una muestra.';
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('loading');
+    }
+  }
+
+  function buildUI() {
+    const app = document.getElementById('app');
+    app.className = '';
+    app.innerHTML = '';
+
+    const counts = { atrasadas:0, hoy:0, semana:0, mes:0, trimestre:0, sinfecha:0 };
+    TASKS.forEach(t => counts[t.b]++);
+
+    app.innerHTML = `
+      <div class="horizon-tabs">
+        <div class="htab warn ${activeHorizon==='atrasadas'?'active':''}" data-h="atrasadas"><div class="hn">${counts.atrasadas}</div><div class="hl">Atrasadas</div></div>
+        <div class="htab ${activeHorizon==='hoy'?'active':''}" data-h="hoy"><div class="hn">${counts.hoy}</div><div class="hl">Hoy</div></div>
+        <div class="htab ${activeHorizon==='semana'?'active':''}" data-h="semana"><div class="hn">${counts.semana}</div><div class="hl">Semana</div></div>
+        <div class="htab ${activeHorizon==='mes'?'active':''}" data-h="mes"><div class="hn">${counts.mes}</div><div class="hl">Mes</div></div>
+        <div class="htab ${activeHorizon==='trimestre'?'active':''}" data-h="trimestre"><div class="hn">${counts.trimestre}</div><div class="hl">Trimestre</div></div>
+      </div>
+      <div class="sinfecha-pill ${activeHorizon==='sinfecha'?'active':''}" data-h="sinfecha"><span class="dot"></span><span>${counts.sinfecha}</span> sin fecha (atrasadas sin reprogramar)</div>
+      <div class="group-toggle">
+        <button class="gtab ${activeGroup==='quadrant'?'active':''}" data-g="quadrant">Por cuadrante</button>
+        <button class="gtab ${activeGroup==='project'?'active':''}" data-g="project">Por proyecto</button>
+      </div>
+      <div id="content"></div>
+      <p class="footnote">Cada carga de esta página vuelve a consultar Notion en tiempo real a través de un webhook de Make. "Semana" = lo que falta de esta semana, "Mes" = lo que falta de este mes, "Trimestre" = lo que falta de este trimestre.</p>
+    `;
+
+    app.querySelectorAll('.htab, .sinfecha-pill').forEach(el => {
+      el.addEventListener('click', () => { activeHorizon = el.dataset.h; buildUI(); });
+    });
+    app.querySelectorAll('.gtab').forEach(el => {
+      el.addEventListener('click', () => { activeGroup = el.dataset.g; buildUI(); });
+    });
+
+    renderContent();
+  }
+
+  function renderContent() {
+    const content = document.getElementById('content');
+    content.innerHTML = '';
+    const visible = TASKS.filter(t => t.b === activeHorizon);
+
+    if (visible.length === 0) {
+      content.innerHTML = '<div class="empty">No hay tareas en este horizonte.</div>';
+      return;
+    }
+
+    if (activeGroup === 'quadrant') {
+      const byQ = {};
+      visible.forEach(t => { const q = t.q || 'none'; (byQ[q] = byQ[q] || []).push(t); });
+      QORDER.forEach(q => { if (byQ[q]) content.appendChild(buildGroup(QLABELS[q].n, QLABELS[q].s, QCOLORS[q], byQ[q])); });
+    } else {
+      const byP = {};
+      visible.forEach(t => { (byP[t.p] = byP[t.p] || []).push(t); });
+      Object.keys(byP).sort((a,b) => byP[b].length - byP[a].length).forEach(p => {
+        content.appendChild(buildGroup(p, '', '#BBA980', byP[p]));
+      });
+    }
+  }
+
+  function buildGroup(name, sub, color, items) {
+    const g = document.createElement('div');
+    g.className = 'group';
+    g.innerHTML =
+      '<div class="group-head">' +
+        '<span class="group-dot" style="background:' + color + '"></span>' +
+        '<span class="group-name">' + escapeHtml(name) + '</span>' +
+        (sub ? '<span class="group-sub">' + escapeHtml(sub) + '</span>' : '') +
+        '<span class="group-count">' + items.length + '</span>' +
+      '</div>';
+    const list = document.createElement('div');
+    items.forEach(t => {
+      const a = document.createElement('a');
+      a.href = t.u; a.target = '_blank'; a.rel = 'noopener';
+      a.className = 'task-row' + (t.b === 'atrasadas' ? ' late' : '');
+      a.style.borderLeftColor = color;
+      a.textContent = t.t;
+      list.appendChild(a);
+    });
+    g.appendChild(list);
+    return g;
+  }
+
+  document.getElementById('refresh-btn').addEventListener('click', load);
+  load();
+</script>
+</body>
+</html>
