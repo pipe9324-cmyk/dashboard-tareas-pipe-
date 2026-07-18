@@ -52,18 +52,79 @@
   .gtab { font-size: 12.5px; padding: 7px 16px; border-radius: 999px; border: none; background: transparent; color: var(--dim); cursor: pointer; font-family: inherit; font-weight: 600; transition: all .15s ease; }
   .gtab.active { background: var(--accent); color: #FFFCF2; }
   .group { margin-bottom: 18px; }
-  .group-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .group-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer; user-select: none; }
+  .group-head:hover .group-name { color: var(--accent); }
+  .chevron { flex: none; width: 14px; text-align: center; color: var(--dim); font-size: 11px; transition: transform .18s ease; }
+  .group.open .chevron { transform: rotate(90deg); }
+  .group-list { display: none; }
+  .group.open .group-list { display: block; }
   .group-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
   .group-name { font-family: 'Space Grotesk', sans-serif; font-size: 13.5px; font-weight: 700; }
   .group-sub { font-size: 11px; color: var(--dim); }
-  .group-count { font-size: 11px; color: var(--dim); background: var(--panel-2); border-radius: 999px; padding: 1px 8px; margin-left: auto; }
-  .task-row { display: block; padding: 7px 0 7px 17px; border-left: 2px solid var(--border); font-size: 13.5px; line-height: 1.4; color: var(--text); text-decoration: none; transition: color .15s ease, border-color .15s ease; }
-  .task-row:hover { color: var(--accent); border-left-color: var(--accent); }
-  .task-row.late::before { content: "● "; color: var(--c1); font-size: 9px; }
+  .group-count { font-size: 11px; font-weight: 700; color: #FFFCF2; background: var(--group-color, var(--dim)); border-radius: 999px; padding: 2px 9px; margin-left: auto; }
+  .task-row { display: flex; align-items: flex-start; gap: 9px; padding: 5px 0; font-size: 13.5px; line-height: 1.4; color: var(--text); text-decoration: none; transition: color .15s ease; }
+  .task-row:hover { color: var(--accent); }
+  .task-row .bullet { width: 6px; height: 6px; border-radius: 50%; flex: none; margin-top: 6px; background: var(--group-color, var(--dim-2)); }
+  .task-row.late .bullet { background: var(--c1); }
   .empty, .state-msg { text-align: center; color: var(--dim); font-size: 13px; padding: 40px 0; }
+  .empty.celebrate {
+    font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 600; color: var(--text);
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+    padding: 34px 20px; box-shadow: 0 1px 2px rgba(58,46,24,0.06);
+  }
   .state-msg.error { color: var(--c1); white-space: pre-wrap; text-align: left; padding: 20px; background: var(--panel); border-radius: 12px; border: 1px solid var(--border); }
   .footnote { margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim-2); line-height: 1.6; }
-  @media (max-width: 480px) { .horizon-tabs { grid-template-columns: repeat(3, 1fr); gap: 6px; } }
+
+  /* Enfoque actual */
+  .focus-primary-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .focus-card-lg {
+    flex: 1; min-width: 0; display: block; background: var(--panel); border: 1px solid var(--border);
+    border-top: 4px solid var(--fc, var(--accent)); border-radius: 14px; padding: 16px 18px;
+    text-decoration: none; color: var(--text); box-shadow: 0 1px 3px rgba(58,46,24,0.08);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .focus-card-lg:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(58,46,24,0.12); }
+  .focus-card-lg .fc-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--fc, var(--accent)); display: block; margin-bottom: 5px; }
+  .focus-card-lg .fc-title { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+  .focus-card-lg .fc-goal { font-size: 12.5px; color: var(--dim); line-height: 1.45; }
+  .focus-secondary { font-size: 11.5px; color: var(--dim-2); margin-bottom: 26px; line-height: 1.6; }
+  .focus-secondary a { color: var(--dim); text-decoration: none; }
+  .focus-secondary a:hover { color: var(--accent); }
+
+  /* Proyectos activos */
+  .section-label {
+    font-family: 'Space Grotesk', sans-serif; font-size: 12.5px; font-weight: 700;
+    color: var(--text); text-transform: uppercase; letter-spacing: 0.05em;
+    margin: 0 0 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .projects-strip {
+    display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 24px;
+    scrollbar-width: thin;
+  }
+  .project-card {
+    flex: none; min-width: 132px; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 12px; box-shadow: 0 1px 2px rgba(58,46,24,0.06);
+    position: relative;
+  }
+  .project-card .pn {
+    font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.3;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    margin-bottom: 8px; min-height: 31px;
+  }
+  .project-card .pc-row { display: flex; align-items: center; gap: 6px; }
+  .project-card .pc { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 700; color: var(--accent); }
+  .project-card .pc-label { font-size: 10px; color: var(--dim); }
+  .project-card .pc-late { width: 6px; height: 6px; border-radius: 50%; background: var(--c1); margin-left: auto; }
+
+  /* Gráfica de cuadrante */
+  .qchart { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(58,46,24,0.06); }
+  .qchart-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .qchart-row:last-child { margin-bottom: 0; }
+  .qchart-label { flex: none; width: 118px; font-size: 11.5px; color: var(--text); font-weight: 600; }
+  .qchart-track { flex: 1; height: 10px; background: var(--panel-2); border-radius: 6px; overflow: hidden; }
+  .qchart-fill { height: 100%; border-radius: 6px; transition: width .5s cubic-bezier(.2,.7,.2,1); }
+  .qchart-count { flex: none; width: 22px; text-align: right; font-family: 'Space Grotesk', sans-serif; font-size: 12.5px; font-weight: 700; color: var(--text); }
+  @media (max-width: 480px) { .horizon-tabs { grid-template-columns: repeat(3, 1fr); gap: 6px; } .focus-primary-row { flex-direction: column; } }
 </style>
 </head>
 <body>
@@ -71,6 +132,9 @@
   <p class="eyebrow"><span class="live-dot" id="live-dot"></span><span id="eyebrow-text">Cargando…</span><button class="refresh-btn" id="refresh-btn"><span class="spin">⟳</span> Actualizar</button></p>
   <h1>Dashboard Tareas Pipe</h1>
   <p class="subline">En vivo desde Notion vía Make. Sin tareas en "Done" ni "No lo Haré". Cada cajón es exclusivo: nada se repite entre cajones.</p>
+
+  <div id="focus-section"></div>
+  <div id="projects-overview"></div>
 
   <div id="app" class="state-msg">Consultando tus tareas…</div>
 </div>
@@ -87,6 +151,63 @@
     none:{n:'Sin prioridad asignada', s:''}
   };
   const QORDER = ['C1','C2','C3','C4','none'];
+
+  const CELEBRATION_PHRASES = [
+    '¡Todo listo! Cero pendientes aquí. 🎉',
+    'Bandeja limpia. Así se hace, Pipe. ✨',
+    'Nada queda por hacer — disfruta el resto del día. 🌤️',
+    'Lo lograste. Cero tareas pendientes. 🙌',
+    'Todo bajo control. Date un respiro. 🧘',
+    'Hecho y hecho. Qué orgullo. 🔥',
+    'Sin pendientes. Te lo ganaste. 🏆',
+    'Cerraste el ciclo. Bien ahí. 🎯',
+    'Ni una tarea suelta. Impecable. 💪',
+    'Todo despejado — buen momento para celebrar. 🥳',
+    'Lista vacía, cabeza tranquila. 🌿',
+    'Misión cumplida por ahora. 🚀'
+  ];
+  function celebrationMessage() {
+    return CELEBRATION_PHRASES[Math.floor(Math.random() * CELEBRATION_PHRASES.length)];
+  }
+  const CELEBRATE_HORIZONS = ['atrasadas', 'hoy', 'semana'];
+
+  // Snapshot de tu base de Proyectos (📁 P.A.R.A) — Estado Proyecto in (Foco Principal, Setup Rápido, Mantenimiento).
+  // Esta parte no viaja por el webhook: se actualiza cuando me pidas refrescar el dashboard completo.
+  const FOCUS_PROJECTS = [
+    { titulo: 'Mi Oxígeno', estado: 'Foco Principal', objetivo: 'Ritual de Soberanía + Tríada de Energía. Sin esto, nada más sostiene.', url: 'https://app.notion.com/36a441b4773c803493efc97b41600619' },
+    { titulo: 'El Maestro de la Rosa - La Resistencia', estado: 'Foco Principal', objetivo: 'Sostener el hogar y la relación con Mari. Presencia real, gestión compartida, acompañamiento en el proceso.', url: 'https://app.notion.com/36a441b4773c8046a6daf7221e8c272c' },
+    { titulo: 'El Renacer del Consultorio', estado: 'Setup Rápido', objetivo: 'Volver a sembrar el consultorio desde donde estamos hoy. Reactivar por referidos — es el único frente activo de trabajo.', url: 'https://app.notion.com/2d4441b4773c8057b1a0e5bf98e66418' },
+  ];
+  const FOCUS_COLORS = { 'Foco Principal': '#E14A45', 'Setup Rápido': '#C9860F', 'Mantenimiento': '#3B5FE0' };
+  const FOCUS_ICONS = { 'Foco Principal': '🔴', 'Setup Rápido': '🟡', 'Mantenimiento': '🔵' };
+
+  function renderFocusSection() {
+    const el = document.getElementById('focus-section');
+    if (FOCUS_PROJECTS.length === 0) { el.innerHTML = ''; return; }
+
+    const primary = FOCUS_PROJECTS.filter(p => p.estado === 'Foco Principal');
+    const secondary = FOCUS_PROJECTS.filter(p => p.estado !== 'Foco Principal');
+
+    let html = '<p class="section-label">🎯 En qué enfocarte</p>';
+
+    if (primary.length) {
+      html += '<div class="focus-primary-row">' + primary.map(p => `
+        <a class="focus-card-lg" href="${p.url}" target="_blank" rel="noopener" style="--fc:${FOCUS_COLORS[p.estado]}">
+          <span class="fc-badge">${FOCUS_ICONS[p.estado]} ${escapeHtml(p.estado)}</span>
+          <div class="fc-title">${escapeHtml(p.titulo)}</div>
+          <div class="fc-goal">${escapeHtml(p.objetivo)}</div>
+        </a>
+      `).join('') + '</div>';
+    }
+
+    if (secondary.length) {
+      html += '<p class="focus-secondary">' + secondary.map(p =>
+        FOCUS_ICONS[p.estado] + ' ' + escapeHtml(p.estado) + ': <a href="' + p.url + '" target="_blank" rel="noopener">' + escapeHtml(p.titulo) + '</a>'
+      ).join('   ·   ') + '</p>';
+    }
+
+    el.innerHTML = html;
+  }
 
   // --- Parsing del bundle crudo que manda el Array Aggregator de Make (properties_value de Notion) ---
   function plainText(arr) {
@@ -138,9 +259,16 @@
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
 
+  function parseISODateLocal(isoStr) {
+    if (!isoStr) return null;
+    const [y, m, d] = isoStr.slice(0, 10).split('-').map(Number);
+    if (!y || !m || !d) return null;
+    return new Date(y, m - 1, d);
+  }
+
   function bucketOf(task, TODAY, WEEK_END, MONTH_END, QUARTER_END) {
     const estado = task.s;
-    const fecha = task.d ? toDateOnly(new Date(task.d)) : null;
+    const fecha = parseISODateLocal(task.d);
     if (estado === 'ATRASADO') {
       if (fecha && fecha < TODAY) return 'atrasadas';
       if (!fecha) return 'sinfecha';
@@ -198,10 +326,12 @@
       const now = new Date();
       eyebrow.textContent = 'TAREAS PIPE · actualizado ' + now.toLocaleDateString('es-CO', {weekday:'long', day:'numeric', month:'long'}) + ' ' + now.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
       dot.classList.remove('stale');
+      renderProjectsOverview();
       buildUI();
     } catch (err) {
       dot.classList.add('stale');
       eyebrow.textContent = 'No se pudo conectar con Make';
+      document.getElementById('projects-overview').innerHTML = '';
       const app = document.getElementById('app');
       app.className = 'state-msg error';
       app.textContent = 'No pude traer los datos en vivo:\n\n' + err.message + '\n\nVerifica que el escenario de Make esté ACTIVO (interruptor ON) y que lo hayas abierto al menos una vez para que "Detect new values" del webhook tenga una muestra.';
@@ -209,6 +339,56 @@
       btn.disabled = false;
       btn.classList.remove('loading');
     }
+  }
+
+  function renderProjectsOverview() {
+    const el = document.getElementById('projects-overview');
+    const byP = {};
+    TASKS.forEach(t => {
+      const p = t.p || 'Sin proyecto';
+      if (p === 'Sin proyecto') return;
+      byP[p] = byP[p] || { total: 0, late: 0 };
+      byP[p].total++;
+      if (t.b === 'atrasadas') byP[p].late++;
+    });
+    const projects = Object.keys(byP).sort((a,b) => byP[b].total - byP[a].total);
+    if (projects.length === 0) { el.innerHTML = ''; return; }
+
+    el.innerHTML =
+      '<p class="section-label">📁 Proyectos activos</p>' +
+      '<div class="projects-strip">' +
+      projects.map(p => `
+        <div class="project-card">
+          <div class="pn">${escapeHtml(p)}</div>
+          <div class="pc-row">
+            <span class="pc">${byP[p].total}</span>
+            <span class="pc-label">abiertas</span>
+            ${byP[p].late > 0 ? '<span class="pc-late" title="' + byP[p].late + ' atrasadas"></span>' : ''}
+          </div>
+        </div>
+      `).join('') +
+      '</div>';
+  }
+
+  function renderQuadrantChart(visible) {
+    const el = document.getElementById('qchart');
+    const counts = { C1:0, C2:0, C3:0, C4:0, none:0 };
+    visible.forEach(t => { counts[t.q || 'none']++; });
+    const max = Math.max(1, ...Object.values(counts));
+    const rows = [
+      ['C1', 'C1 · Urgente/Import.', QCOLORS.C1],
+      ['C2', 'C2 · Importante', QCOLORS.C2],
+      ['C3', 'C3 · Urgente', QCOLORS.C3],
+      ['C4', 'C4 · Ni una ni otra', QCOLORS.C4],
+      ['none', 'Sin prioridad', QCOLORS.none],
+    ];
+    el.innerHTML = '<div class="qchart">' + rows.map(([key, label, color]) => `
+      <div class="qchart-row">
+        <span class="qchart-label">${label}</span>
+        <div class="qchart-track"><div class="qchart-fill" style="width:${(counts[key]/max*100).toFixed(0)}%; background:${color}"></div></div>
+        <span class="qchart-count">${counts[key]}</span>
+      </div>
+    `).join('') + '</div>';
   }
 
   function buildUI() {
@@ -228,6 +408,7 @@
         <div class="htab ${activeHorizon==='trimestre'?'active':''}" data-h="trimestre"><div class="hn">${counts.trimestre}</div><div class="hl">Trimestre</div></div>
       </div>
       <div class="sinfecha-pill ${activeHorizon==='sinfecha'?'active':''}" data-h="sinfecha"><span class="dot"></span><span>${counts.sinfecha}</span> sin fecha (atrasadas sin reprogramar)</div>
+      <div id="qchart"></div>
       <div class="group-toggle">
         <button class="gtab ${activeGroup==='quadrant'?'active':''}" data-g="quadrant">Por cuadrante</button>
         <button class="gtab ${activeGroup==='project'?'active':''}" data-g="project">Por proyecto</button>
@@ -250,9 +431,14 @@
     const content = document.getElementById('content');
     content.innerHTML = '';
     const visible = TASKS.filter(t => t.b === activeHorizon);
+    renderQuadrantChart(visible);
 
     if (visible.length === 0) {
-      content.innerHTML = '<div class="empty">No hay tareas en este horizonte.</div>';
+      if (CELEBRATE_HORIZONS.includes(activeHorizon)) {
+        content.innerHTML = '<div class="empty celebrate">' + celebrationMessage() + '</div>';
+      } else {
+        content.innerHTML = '<div class="empty">No hay tareas en este horizonte.</div>';
+      }
       return;
     }
 
@@ -272,20 +458,25 @@
   function buildGroup(name, sub, color, items) {
     const g = document.createElement('div');
     g.className = 'group';
+    g.style.setProperty('--group-color', color);
     g.innerHTML =
       '<div class="group-head">' +
+        '<span class="chevron">▸</span>' +
         '<span class="group-dot" style="background:' + color + '"></span>' +
         '<span class="group-name">' + escapeHtml(name) + '</span>' +
         (sub ? '<span class="group-sub">' + escapeHtml(sub) + '</span>' : '') +
         '<span class="group-count">' + items.length + '</span>' +
       '</div>';
+    g.querySelector('.group-head').addEventListener('click', () => {
+      g.classList.toggle('open');
+    });
     const list = document.createElement('div');
+    list.className = 'group-list';
     items.forEach(t => {
       const a = document.createElement('a');
       a.href = t.u; a.target = '_blank'; a.rel = 'noopener';
       a.className = 'task-row' + (t.b === 'atrasadas' ? ' late' : '');
-      a.style.borderLeftColor = color;
-      a.textContent = t.t;
+      a.innerHTML = '<span class="bullet"></span><span>' + escapeHtml(t.t) + '</span>';
       list.appendChild(a);
     });
     g.appendChild(list);
@@ -293,6 +484,7 @@
   }
 
   document.getElementById('refresh-btn').addEventListener('click', load);
+  renderFocusSection();
   load();
 </script>
 </body>
