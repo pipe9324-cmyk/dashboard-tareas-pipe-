@@ -44,6 +44,8 @@
   .htab.warn .hn { color: var(--c1); }
   .htab.warn.active .hn { color: #FFC4C0; }
   .htab .hl { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  .htab .hsub { font-size: 10px; color: #4E9B6E; font-weight: 600; margin-top: 3px; }
+  .htab.active .hsub { color: #8FDCA8; }
   .sinfecha-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; padding: 5px 12px; font-size: 11.5px; color: var(--dim); cursor: pointer; margin-bottom: 20px; transition: all .15s ease; }
   .sinfecha-pill:hover { border-color: var(--dim-2); color: var(--text); }
   .sinfecha-pill.active { background: var(--text); border-color: var(--text); color: var(--bg); }
@@ -67,6 +69,15 @@
   .task-row .bullet { width: 6px; height: 6px; border-radius: 50%; flex: none; margin-top: 6px; background: var(--group-color, var(--dim-2)); }
   .task-row.late .bullet { background: var(--c1); }
   .empty, .state-msg { text-align: center; color: var(--dim); font-size: 13px; padding: 40px 0; }
+  .donut-card { display: flex; align-items: center; gap: 22px; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; margin-bottom: 14px; box-shadow: 0 1px 2px rgba(58,46,24,0.06); }
+  .donut { width: 96px; height: 96px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center; }
+  .donut-hole { width: 62px; height: 62px; border-radius: 50%; background: var(--panel); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .donut-hole .dh-n { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; }
+  .donut-hole .dh-l { font-size: 8.5px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.04em; }
+  .donut-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--text); }
+  .donut-legend .li { display: flex; align-items: center; gap: 6px; }
+  .donut-legend .sw { width: 9px; height: 9px; border-radius: 3px; }
+  .atrasadas-note { background: rgba(225,74,69,0.10); border: 1px solid var(--c1); border-radius: 12px; padding: 12px 16px; font-size: 13px; color: var(--text); margin: 12px 0 14px; }
   .empty.celebrate {
     font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 600; color: var(--text);
     background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
@@ -215,6 +226,14 @@
     return arr.map(x => (x && (x.plain_text ?? x.text?.content)) || '').join('');
   }
 
+  function normalizeId(raw) {
+    if (!raw) return null;
+    const m = String(raw).match(/([a-f0-9]{32})/i);
+    return m ? m[1].toLowerCase() : null;
+  }
+
+  const PROJECT_MAP = {"206441b4773c810a9f65fc7f75d1ddf7": "Consentimiento y limites WhatsApp", "206441b4773c81268810c9ed0ff7e5b5": "Llegar a 1k  en Instragram", "206441b4773c812899f4e01fc896a56b": "Telepatia", "206441b4773c813e9967f9cdf57d54d3": "Mejorar Instrgram", "206441b4773c8143b973f64604726dff": "Tener pagina  de internet", "206441b4773c815986f9edbbf236a06f": "Subir cosas al Blog Internet", "206441b4773c8192bdcbe4e7f9c70b8e": "Pagina Web", "206441b4773c81e2af4df387e8695e12": "Optimizar WhatsApp business y agendamiento", "206441b4773c81f5ab9fc54381a1a46f": "Consultorio OS v2.0", "16b441b4773c80bba703c977f9f77dad": "Gottman coach", "206441b4773c804da085cfb54f594a57": "Curso Sueño IIIS", "20c441b4773c804d8ea6e0bfe74f8998": "Llegar a sesión 40 de Psicologia", "20d441b4773c80d095cbc36980b2e8f1": "Articulos para padres Blog pediatria", "219441b4773c80958ea8cf252098a228": "Leer libros de parejas", "21a441b4773c801aa97bdd0251700d73": "Encuentro en parejas", "21a441b4773c80c6adf5f188b3a2f655": "Hacer de Banco emocional  -  Mari", "21a441b4773c80f3827ce949076ddbae": "Leer 3 libros en Q3", "226441b4773c80338d8bf5344ccd6f6e": "Tener un sistema de Autocuidado y rutinas", "23d441b4773c80398636c4a6b5694197": "Crear Notion para gestion del hogar", "23d441b4773c80c99c01d176c2ffb4a5": "Inversiones M&P 2025", "23e441b4773c80059169f2cd4790fda6": "Seguridad  y Salud en el Trabajo SOMEC", "23e441b4773c807a84cceb0081ab309c": "Declaración renta 2025", "244441b4773c800aa6def8e0c38a0367": "Llegare a 800 seguidores", "244441b4773c80209270ed0bb04dbfe9": "Hace rutina de musculo - Calistenia !!", "244441b4773c8020ab9fddf6af118d4b": "Ayudar a Ayelet", "244441b4773c806fa6c2e9a0e1d8b045": "Leer 3 librso Q2", "244441b4773c8075a83febf8cb77b943": "Rutinas Fitbod 3/semana  en 2025", "244441b4773c8075aea6ca62f07f5bc8": "Hacer rutina de 7 min - Mañana en Q3", "244441b4773c80cfa3bcd47146878c61": "Llegare a 430 seguidores", "244441b4773c80d5802bf561b7702f89": "Leer 3 librso Q1", "244441b4773c80d5b454fb11b65e3064": "Facturas y pagos al dia en el 2026", "244441b4773c80f2a06ff63ea129870d": "Realizar 2 rutinas de bicicleta a las semana", "246441b4773c80469828f6ff5428aaf6": "Charla Crianza Respetuosa", "249441b4773c807f936ffd3421a99d73": "Proyecto Radio Lactancia Materna", "24b441b4773c801a99f2d414c6f4f24d": "Pendiente de Mari 2025", "24b441b4773c806eb1a4c057b95c5367": "Controles Tiroides - Graves", "259441b4773c80af9388f34428c87bb5": "Ayudar activamente en la lonchera a Mari", "25a441b4773c80ae9d81fb372a509785": "Convenios II semestre 2025", "263441b4773c803f84b9f8fbdec1b75c": "Leer 3 libros en Q4", "26e441b4773c80308827f1778cbdff7b": "Charla Crianza Respetuosa", "26e441b4773c809fb43ee9f90a5789c0": "Paseo Cartagena", "26e441b4773c80e1aa48de546e911e1f": "Paciente nuevo Sept", "275441b4773c80e4a995ff463b45086f": "Terminar proyecto clown", "27c441b4773c805898f8e7674b10b0ba": "Cumpleaños amigos y Familia 2026", "27c441b4773c807785b9df1633b7976d": "GTD Pipe 2026", "283441b4773c80e1a654c23996c47268": "Seguridad Activa Con actos con Mari", "287441b4773c80aeaf35dcf6832ca5a8": "Tener una canción cantada y tocada en piano", "288441b4773c80b6bdfefa4a3e82c631": "Leer libro Cambia el chip (Switch)", "289441b4773c802ab69ce09db45474b2": "Leer revolución de la glucosa", "289441b4773c8043a0f1e8c68f86786c": "Comer frutas a diario", "289441b4773c80f9b408c3c0f2dc5ee8": "Organizar el Notion de finanzas personales y de pareja", "28b441b4773c802181fbeebaf776d384": "Plan integral para salir de zona de confort", "28b441b4773c80768fded88a7b487ab0": "Escoge un hábito ridículamente pequeño", "28b441b4773c80bc902be07c842d4397": "Leer libro Hábitos mínimos", "28c441b4773c80cd9decd7ffe2ab755b": "Viaje Pasto 2026 - Familia Díaz Herrera", "2bc441b4773c808aa7b6ef84b07d8060": "Cuidado Milu", "2c2441b4773c80ff96ede22ea3efe407": "Viaje Santa Marta 2026", "2d3441b4773c800293bfceb14e1e2236": "El Freno de Mano: De Automático a Manual (Q1)", "2d3441b4773c80308f03f528116781b1": "El Recreo Artístico", "2d3441b4773c803886dae94bcb54a159": "El Impuesto de Prosperidad (Automatización Q1)", "2d3441b4773c80828b24cbe47ce8ee6d": "Operación Cortafuegos: Eficiencia Radical (Q1)", "2d3441b4773c8094a342f070a84368e7": "Home OS v1.0", "2d3441b4773c809e9e3bc10a8bdb9c27": "La Muralla Financiera (Operación Martes de Oro)", "2d3441b4773c80bf9771db3c95074cdb": "Instalación Escalonada de Sistema de Vitalidad", "2d3441b4773c80c4915bc39d43d9cecb": "Instalación del Refugio Mental (Q1)", "2d4441b4773c8057b1a0e5bf98e66418": "El Renacer del Consultorio", "2d4441b4773c80cfbacccc3b25d766f4": "Consultoría Sueño VIP", "2d8441b4773c805ab88efdbd3fc78030": "Autocuidado Pipe", "31d441b4773c801ebd10c14e291ad17a": "Abastecimiento Inteligente (El Mercado)", "31d441b4773c802b8f6ce6349493ce10": "Rituales de Sincronía (La Conexión)", "31d441b4773c80389421ffe48e560bfa": "Ecosistema Digital (Las Herramientas)", "31d441b4773c80e3a8e9ce927c3f582d": "Plan Menú Sin Estrés (El Menú)", "32b441b4773c8025a8daddcbf09dcead": "Leer 12 libros en 2026", "33c441b4773c80a19b15d7a5c1b24f29": "Sistema de Vitalidad V2", "33d441b4773c8080b854e4324f20de53": "Actualizar HomeOs + Nutrición", "33d441b4773c80a99b37ea158f9c56a3": "El Ritual de Pareja y Abundancia", "33d441b4773c80aa925ed21016ebca07": "Recreo de los Martes: Impro", "33d441b4773c80d0a180cf9df983fa50": "Presupuesto Inverso", "349441b4773c800e82c5e310852ab094": "Blindaje y Automatización", "34e441b4773c8051aaaadceea4c39512": "Libro de Clown", "351441b4773c811db3bbc9f894b6f1bd": "Blindaje Legal Datos Pacientes - Ley 1581", "351441b4773c8163a844de7ff83fe5f6": "Newsletter con Doble Opt-in Legal", "36a441b4773c803493efc97b41600619": "Mi Oxígeno", "36a441b4773c8046a6daf7221e8c272c": "El Maestro de la Rosa", "36a441b4773c805aabebd8d7c8a28cc8": "Habilitación adecuada 2026", "38e441b4773c80728b8bd8bc37feddbb": "El Pozo en el Desierto", "3d0c7c2318774f949a532d33fe34bce7": "Cambiar carro con tío David", "3f953ca2edf044bf9d6b2a7f2ac2f8fb": "Médico Empresario"};
+
   function extractTask(raw) {
     const pv = raw.properties_value || {};
     const title = plainText(pv['Tarea pipe']) || '(sin título)';
@@ -236,6 +255,20 @@
         proyecto = proj;
       } else if (proj.name) {
         proyecto = proj.name;
+      }
+    }
+
+    // Respaldo: "Proyecto (texto)" es un rollup muy nuevo y Make a veces no lo manda.
+    // Si no lo trajo, resolvemos el nombre nosotros mismos desde la relación cruda "📁 Proyectos".
+    if (!proyecto) {
+      const rel = pv['📁 Proyectos'];
+      if (Array.isArray(rel) && rel.length) {
+        const names = rel.map(item => {
+          const raw = typeof item === 'string' ? item : (item.url || item.id || item.page_id || '');
+          const id = normalizeId(raw);
+          return id && PROJECT_MAP[id] ? PROJECT_MAP[id] : null;
+        }).filter(Boolean);
+        proyecto = names.length ? names.join(', ') : null;
       }
     }
 
@@ -266,21 +299,36 @@
     return new Date(y, m - 1, d);
   }
 
-  function bucketOf(task, TODAY, WEEK_END, MONTH_END, QUARTER_END) {
-    const estado = task.s;
-    const fecha = parseISODateLocal(task.d);
-    if (estado === 'ATRASADO') {
-      if (fecha && fecha < TODAY) return 'atrasadas';
-      if (!fecha) return 'sinfecha';
-    } else if (!fecha) {
-      return null;
-    }
-    const d = fecha;
-    if (d <= TODAY) return 'hoy';
-    if (d <= WEEK_END) return 'semana';
-    if (d <= MONTH_END) return 'mes';
-    if (d <= QUARTER_END) return 'trimestre';
-    return null;
+  // Cada horizonte es una ventana de calendario COMPLETA (no excluyente):
+  // "semana" incluye hoy; "mes" incluye la semana; "trimestre" incluye el mes.
+  // Así los conteos responden "¿cómo voy en el día / la semana / el mes / el trimestre?"
+  function inHorizon(t, h) {
+    const W = WINDOWS;
+    const d = t.date;
+    if (h === 'sinfecha') return t.s === 'ATRASADO' && !d;
+    if (h === 'atrasadas') return !t.completed && d && d < W.TODAY;
+    if (!d) return false;
+    if (h === 'hoy') return d.getTime() === W.TODAY.getTime();
+    if (h === 'semana') return d >= W.WEEK_START && d <= W.WEEK_END;
+    if (h === 'mes') return d >= W.MONTH_START && d <= W.MONTH_END;
+    if (h === 'trimestre') return d >= W.QUARTER_START && d <= W.QUARTER_END;
+    return false;
+  }
+
+  function horizonStats(h) {
+    const items = TASKS.filter(t => inHorizon(t, h));
+    const s = { total: items.length, done: 0, dismissed: 0, progress: 0, notStarted: 0, overdue: 0, pending: 0, items };
+    items.forEach(t => {
+      if (t.done) s.done++;
+      else if (t.dismissed) s.dismissed++;
+      else {
+        s.pending++;
+        if (t.s === 'In progress' || t.s === 'In Progress') s.progress++;
+        else if (t.date && t.date < WINDOWS.TODAY) s.overdue++;
+        else s.notStarted++;
+      }
+    });
+    return s;
   }
 
   function escapeHtml(s) {
@@ -294,11 +342,14 @@
     const isoOffset = (day === 0) ? 6 : day - 1;
     const WEEK_START = new Date(TODAY); WEEK_START.setDate(TODAY.getDate() - isoOffset);
     const WEEK_END = new Date(WEEK_START); WEEK_END.setDate(WEEK_START.getDate() + 6);
+    const MONTH_START = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
     const MONTH_END = new Date(TODAY.getFullYear(), TODAY.getMonth() + 1, 0);
     const qStartMonth = Math.floor(TODAY.getMonth() / 3) * 3;
+    const QUARTER_START = new Date(TODAY.getFullYear(), qStartMonth, 1);
     const QUARTER_END = new Date(TODAY.getFullYear(), qStartMonth + 3, 0);
-    return { TODAY, WEEK_END, MONTH_END, QUARTER_END };
+    return { TODAY, WEEK_START, WEEK_END, MONTH_START, MONTH_END, QUARTER_START, QUARTER_END };
   }
+  let WINDOWS = null;
 
   let TASKS = [];
   let activeHorizon = 'atrasadas';
@@ -316,12 +367,12 @@
       const raw = await res.json();
       if (!Array.isArray(raw)) throw new Error('La respuesta no es un array. Revisa el Body del módulo Webhook response.');
 
-      const { TODAY, WEEK_END, MONTH_END, QUARTER_END } = computeWindows();
+      WINDOWS = computeWindows();
       TASKS = raw
         .map(extractTask)
-        .map(t => ({ ...t, q: qcode(t.q) }))
-        .map(t => ({ ...t, b: bucketOf(t, TODAY, WEEK_END, MONTH_END, QUARTER_END) }))
-        .filter(t => t.b);
+        .map(t => ({ ...t, q: qcode(t.q), done: t.s === 'Done', dismissed: t.s === 'No lo Hare' }))
+        .map(t => ({ ...t, completed: t.done || t.dismissed, date: parseISODateLocal(t.d) }))
+        .filter(t => ['atrasadas','hoy','semana','mes','trimestre','sinfecha'].some(h => inHorizon(t, h)));
 
       const now = new Date();
       eyebrow.textContent = 'TAREAS PIPE · actualizado ' + now.toLocaleDateString('es-CO', {weekday:'long', day:'numeric', month:'long'}) + ' ' + now.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
@@ -345,11 +396,12 @@
     const el = document.getElementById('projects-overview');
     const byP = {};
     TASKS.forEach(t => {
+      if (t.completed) return;
       const p = t.p || 'Sin proyecto';
       if (p === 'Sin proyecto') return;
       byP[p] = byP[p] || { total: 0, late: 0 };
       byP[p].total++;
-      if (t.b === 'atrasadas') byP[p].late++;
+      if (t.date && t.date < WINDOWS.TODAY) byP[p].late++;
     });
     const projects = Object.keys(byP).sort((a,b) => byP[b].total - byP[a].total);
     if (projects.length === 0) { el.innerHTML = ''; return; }
@@ -396,18 +448,26 @@
     app.className = '';
     app.innerHTML = '';
 
-    const counts = { atrasadas:0, hoy:0, semana:0, mes:0, trimestre:0, sinfecha:0 };
-    TASKS.forEach(t => counts[t.b]++);
+    const S = {
+      atrasadas: horizonStats('atrasadas'),
+      hoy: horizonStats('hoy'),
+      semana: horizonStats('semana'),
+      mes: horizonStats('mes'),
+      trimestre: horizonStats('trimestre'),
+      sinfecha: horizonStats('sinfecha')
+    };
+    const sub = h => S[h].total > 0 ? `<div class="hsub">✓ ${S[h].done} de ${S[h].total}</div>` : '<div class="hsub">&nbsp;</div>';
 
     app.innerHTML = `
       <div class="horizon-tabs">
-        <div class="htab warn ${activeHorizon==='atrasadas'?'active':''}" data-h="atrasadas"><div class="hn">${counts.atrasadas}</div><div class="hl">Atrasadas</div></div>
-        <div class="htab ${activeHorizon==='hoy'?'active':''}" data-h="hoy"><div class="hn">${counts.hoy}</div><div class="hl">Hoy</div></div>
-        <div class="htab ${activeHorizon==='semana'?'active':''}" data-h="semana"><div class="hn">${counts.semana}</div><div class="hl">Semana</div></div>
-        <div class="htab ${activeHorizon==='mes'?'active':''}" data-h="mes"><div class="hn">${counts.mes}</div><div class="hl">Mes</div></div>
-        <div class="htab ${activeHorizon==='trimestre'?'active':''}" data-h="trimestre"><div class="hn">${counts.trimestre}</div><div class="hl">Trimestre</div></div>
+        <div class="htab warn ${activeHorizon==='atrasadas'?'active':''}" data-h="atrasadas"><div class="hn">${S.atrasadas.pending}</div><div class="hl">Atrasadas</div><div class="hsub">&nbsp;</div></div>
+        <div class="htab ${activeHorizon==='hoy'?'active':''}" data-h="hoy"><div class="hn">${S.hoy.pending}</div><div class="hl">Hoy</div>${sub('hoy')}</div>
+        <div class="htab ${activeHorizon==='semana'?'active':''}" data-h="semana"><div class="hn">${S.semana.pending}</div><div class="hl">Semana</div>${sub('semana')}</div>
+        <div class="htab ${activeHorizon==='mes'?'active':''}" data-h="mes"><div class="hn">${S.mes.pending}</div><div class="hl">Mes</div>${sub('mes')}</div>
+        <div class="htab ${activeHorizon==='trimestre'?'active':''}" data-h="trimestre"><div class="hn">${S.trimestre.pending}</div><div class="hl">Trimestre</div>${sub('trimestre')}</div>
       </div>
-      <div class="sinfecha-pill ${activeHorizon==='sinfecha'?'active':''}" data-h="sinfecha"><span class="dot"></span><span>${counts.sinfecha}</span> sin fecha (atrasadas sin reprogramar)</div>
+      <div class="sinfecha-pill ${activeHorizon==='sinfecha'?'active':''}" data-h="sinfecha"><span class="dot"></span><span>${S.sinfecha.pending}</span> sin fecha (atrasadas sin reprogramar)</div>
+      <div id="donut-panel"></div>
       <div id="qchart"></div>
       <div class="group-toggle">
         <button class="gtab ${activeGroup==='quadrant'?'active':''}" data-g="quadrant">Por cuadrante</button>
@@ -427,30 +487,71 @@
     renderContent();
   }
 
+  function renderDonut(stats) {
+    const el = document.getElementById('donut-panel');
+    if (activeHorizon === 'atrasadas' || activeHorizon === 'sinfecha' || stats.total === 0) { el.innerHTML = ''; return; }
+    const segs = [
+      ['Hechas', stats.done, '#4E9B6E'],
+      ['En progreso', stats.progress, '#F2872E'],
+      ['Sin empezar', stats.notStarted, '#B8A575'],
+      ['Atrasadas', stats.overdue, '#E14A45'],
+      ['No lo haré', stats.dismissed, '#8B8171'],
+    ].filter(s => s[1] > 0);
+    let acc = 0;
+    const stops = segs.map(([label, n, color]) => {
+      const from = acc / stats.total * 360;
+      acc += n;
+      const to = acc / stats.total * 360;
+      return `${color} ${from.toFixed(1)}deg ${to.toFixed(1)}deg`;
+    }).join(', ');
+    el.innerHTML = `
+      <div class="donut-card">
+        <div class="donut" style="background: conic-gradient(${stops})">
+          <div class="donut-hole"><span class="dh-n">${stats.done}/${stats.total}</span><span class="dh-l">hechas</span></div>
+        </div>
+        <div class="donut-legend">${segs.map(([label, n, color]) =>
+          '<span class="li"><span class="sw" style="background:' + color + '"></span>' + label + ': <b>' + n + '</b></span>'
+        ).join('')}</div>
+      </div>`;
+  }
+
   function renderContent() {
     const content = document.getElementById('content');
     content.innerHTML = '';
-    const visible = TASKS.filter(t => t.b === activeHorizon);
-    renderQuadrantChart(visible);
+    const stats = horizonStats(activeHorizon);
+    const pendientes = stats.items.filter(t => !t.completed);
+    renderDonut(stats);
+    renderQuadrantChart(pendientes);
 
-    if (visible.length === 0) {
-      if (CELEBRATE_HORIZONS.includes(activeHorizon)) {
-        content.innerHTML = '<div class="empty celebrate">' + celebrationMessage() + '</div>';
+    if (pendientes.length === 0) {
+      if (CELEBRATE_HORIZONS.includes(activeHorizon) && stats.total > 0) {
+        const atras = horizonStats('atrasadas');
+        if (atras.pending > 0 && activeHorizon !== 'atrasadas') {
+          content.innerHTML = '<div class="empty celebrate">' + celebrationMessage() + '</div>' +
+            '<div class="atrasadas-note">⚠ Pero aún tienes <b>' + atras.pending + '</b> atrasada' + (atras.pending === 1 ? '' : 's') + ' — aprovecha el envión:</div>';
+          renderGroups(content, atras.items.filter(t => !t.completed));
+        } else {
+          content.innerHTML = '<div class="empty celebrate">' + celebrationMessage() + '</div>';
+        }
       } else {
-        content.innerHTML = '<div class="empty">No hay tareas en este horizonte.</div>';
+        content.innerHTML = '<div class="empty">No hay tareas pendientes en este horizonte.</div>';
       }
       return;
     }
 
+    renderGroups(content, pendientes);
+  }
+
+  function renderGroups(container, visible) {
     if (activeGroup === 'quadrant') {
       const byQ = {};
       visible.forEach(t => { const q = t.q || 'none'; (byQ[q] = byQ[q] || []).push(t); });
-      QORDER.forEach(q => { if (byQ[q]) content.appendChild(buildGroup(QLABELS[q].n, QLABELS[q].s, QCOLORS[q], byQ[q])); });
+      QORDER.forEach(q => { if (byQ[q]) container.appendChild(buildGroup(QLABELS[q].n, QLABELS[q].s, QCOLORS[q], byQ[q])); });
     } else {
       const byP = {};
       visible.forEach(t => { (byP[t.p] = byP[t.p] || []).push(t); });
       Object.keys(byP).sort((a,b) => byP[b].length - byP[a].length).forEach(p => {
-        content.appendChild(buildGroup(p, '', '#BBA980', byP[p]));
+        container.appendChild(buildGroup(p, '', '#BBA980', byP[p]));
       });
     }
   }
@@ -475,7 +576,7 @@
     items.forEach(t => {
       const a = document.createElement('a');
       a.href = t.u; a.target = '_blank'; a.rel = 'noopener';
-      a.className = 'task-row' + (t.b === 'atrasadas' ? ' late' : '');
+      a.className = 'task-row' + (!t.completed && t.date && t.date < WINDOWS.TODAY ? ' late' : '');
       a.innerHTML = '<span class="bullet"></span><span>' + escapeHtml(t.t) + '</span>';
       list.appendChild(a);
     });
