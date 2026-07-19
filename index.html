@@ -319,13 +319,13 @@
     const items = TASKS.filter(t => inHorizon(t, h));
     const s = { total: items.length, done: 0, dismissed: 0, progress: 0, notStarted: 0, overdue: 0, pending: 0, items };
     items.forEach(t => {
-      if (t.done) s.done++;
-      else if (t.dismissed) s.dismissed++;
+      if (t.s === 'Done') s.done++;
+      else if (t.s === 'No lo Hare') s.dismissed++;
       else {
         s.pending++;
-        if (t.s === 'In progress' || t.s === 'In Progress') s.progress++;
-        else if (t.date && t.date < WINDOWS.TODAY) s.overdue++;
-        else s.notStarted++;
+        if (t.s === 'ATRASADO') s.overdue++;
+        else if (t.s === 'In progress' || t.s === 'In Progress') s.progress++;
+        else s.notStarted++; // "Not started" y cualquier otro valor no contemplado
       }
     });
     return s;
@@ -492,13 +492,14 @@
     if (activeHorizon === 'atrasadas' || activeHorizon === 'sinfecha' || stats.total === 0) { el.innerHTML = ''; return; }
     const segs = [
       ['Hechas', stats.done, '#4E9B6E'],
-      ['En progreso', stats.progress, '#F2872E'],
+      ['En progreso', stats.progress, '#3B5FE0'],
       ['Sin empezar', stats.notStarted, '#B8A575'],
       ['Atrasadas', stats.overdue, '#E14A45'],
       ['No lo haré', stats.dismissed, '#8B8171'],
-    ].filter(s => s[1] > 0);
+    ];
+    const arcSegs = segs.filter(s => s[1] > 0);
     let acc = 0;
-    const stops = segs.map(([label, n, color]) => {
+    const stops = arcSegs.map(([label, n, color]) => {
       const from = acc / stats.total * 360;
       acc += n;
       const to = acc / stats.total * 360;
